@@ -1,7 +1,8 @@
 pipeline {
   agent {
     docker {
-      image 'vasanth8694/book-store-image:latest'
+      // Changed image to Maven + JDK so mvn commands will work
+      image 'maven:3.9.3-eclipse-temurin-17'
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
     }
   }
