@@ -62,6 +62,7 @@ pipeline {
       environment {
         GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
         GIT_USER_NAME = "vasanth-86"
+        GITHUB_TOKEN = credentials('github')
       }
       steps {
         withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
