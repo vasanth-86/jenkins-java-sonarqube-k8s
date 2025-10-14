@@ -6,7 +6,9 @@ pipeline {
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
+
   stages {
+
     stage('Checkout') {
       steps {
         sh 'echo passed'
@@ -33,7 +35,6 @@ pipeline {
     }
 
     stage('Install Docker CLI') {
-      // Install Docker CLI inside the Maven container
       steps {
         sh '''
           apt-get update && apt-get install -y docker.io
@@ -58,8 +59,9 @@ pipeline {
       }
     }
 
+    // ✅ Fixed and cleaned up: Update Deployment File runs outside Docker
     stage('Update Deployment File') {
-      agent any  // Run outside Docker to access real .git
+      agent any
       environment {
         GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
       }
@@ -83,6 +85,5 @@ pipeline {
         }
       }
     }
- 
-
-
+  }
+}
