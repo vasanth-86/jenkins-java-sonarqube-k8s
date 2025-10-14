@@ -58,26 +58,33 @@ pipeline {
       }
     }
 
-            stage('Update Deployment File') {
+    stage('Update Deployment File') {
       environment {
         GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
       }
       steps {
+        // ✅ Ensure the repo is checked out again for git context
+        checkout scm
+
         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
           sh '''
+            echo "📝 Updating deployment file with new image tag..."
             git config user.email "vasantheeswaransakthivel@gmail.com"
             git config user.name "${GIT_USER}"
-            BUILD_NUMBER=${BUILD_NUMBER}
-            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" jenkins-java-sonarqube-k8s/java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-            git add jenkins-java-sonarqube-k8s/java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+
+            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" \
+              java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+
+            git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
             git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
+
+            echo "🚀 Pushing updated manifest to GitHub..."
             git push https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/${GIT_REPO_NAME}.git HEAD:main
           '''
         }
       }
     }
-  } 
-}   
- 
+  }
+}
 
 
