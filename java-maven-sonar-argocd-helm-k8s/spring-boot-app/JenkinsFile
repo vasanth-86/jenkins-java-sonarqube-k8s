@@ -59,13 +59,12 @@ pipeline {
     }
 
     stage('Update Deployment File') {
+      agent any  // Run outside Docker to access real .git
       environment {
         GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
       }
       steps {
-        // ✅ Ensure the repo is checked out again for git context
         checkout scm
-
         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
           sh '''
             echo "📝 Updating deployment file with new image tag..."
@@ -84,7 +83,6 @@ pipeline {
         }
       }
     }
-  }
-}
+ 
 
 
