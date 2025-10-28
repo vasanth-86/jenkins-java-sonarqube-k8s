@@ -60,7 +60,7 @@ pipeline {
     }
     stage('Update Deployment File') {
         environment {
-            GIT_REPO_NAME = "jenkins-java-sonarqube-k8s "
+            GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
             GIT_USER_NAME = "vasanth-86"
         }
         steps {
