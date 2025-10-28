@@ -59,24 +59,23 @@ pipeline {
       }
     }
     stage('Update Deployment File') {
-    environment {
+      environment {
         GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
         GIT_USER_NAME = "vasanth-86"
-    }
-    steps {
-        checkout scm   // ✅ Ensures you’re in a Git repo
+      }
+      steps {
+        checkout scm
         withCredentials([string(credentialsId: 'github-1', variable: 'GITHUB_TOKEN')]) {
-            sh '''
-                git config user.email "vasantheeswaransakthivel.com"
-                git config user.name "vasanth-86"
-                BUILD_NUMBER=${BUILD_NUMBER}
-                sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-                git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-                git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
-            '''
+          sh '''
+            git config user.email "vasantheeswaransakthivel.com"
+            git config user.name "vasanth-86"
+            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+            git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+          '''
         }
+      }
     }
-}
-
+  }
 }
