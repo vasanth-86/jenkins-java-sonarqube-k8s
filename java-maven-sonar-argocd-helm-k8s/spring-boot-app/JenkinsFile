@@ -73,7 +73,7 @@ pipeline {
     }
 
     stage('Update Deployment File') {
-      agent { label 'master' } // ✅ ensures workspace and .git directory
+      agent { label 'built-in' } // ✅ ensures workspace and .git directory
       environment {
         GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
         GIT_USER_NAME = "vasanth-86"
