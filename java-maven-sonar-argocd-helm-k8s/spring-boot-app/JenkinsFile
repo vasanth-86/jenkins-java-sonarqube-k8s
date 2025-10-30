@@ -15,8 +15,12 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        // ✅ This ensures the .git directory is available
-        git branch: 'main', url: 'https://github.com/vasanth-86/jenkins-java-sonarqube-k8s.git'
+        // ✅ Explicitly clone repository inside container so .git folder exists
+        sh '''
+          rm -rf *
+          git clone https://github.com/vasanth-86/jenkins-java-sonarqube-k8s.git .
+          git checkout main
+        '''
       }
     }
 
