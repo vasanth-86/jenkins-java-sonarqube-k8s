@@ -1,17 +1,10 @@
 pipeline {
   agent {
-  docker {
-    image 'maven:3.9.3-eclipse-temurin-17'
-    args """
-      --user root \
-      -v ${env.WORKSPACE}:${env.WORKSPACE} \
-      -w ${env.WORKSPACE} \
-      --network host \
-      --security-opt apparmor=unconfined
-    """
+    docker {
+      image 'maven:3.9.3-eclipse-temurin-17'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock --network host --security-opt apparmor=unconfined'
+    }
   }
-}
-
 
   stages {
 
@@ -108,6 +101,15 @@ pipeline {
           }
         }
       }
+    }
+  }
+
+  post {
+    success {
+      echo "✅ Build succeeded!"
+    }
+    failure {
+      echo "❌ Build failed!"
     }
   }
 }
