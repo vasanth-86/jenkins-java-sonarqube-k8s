@@ -85,7 +85,7 @@ pipeline {
             echo "Current directory: $(pwd)"
             ls -a
             git config user.email "vasantheeswaransakthivel@gmail.com"
-            git config user.name "vasanth-86"
+            git config user.name "vasanth"
             sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
             git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
             git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
