@@ -73,16 +73,15 @@ pipeline {
     }
 
     stage('Update Deployment File') {
-      agent none // ✅ Run this stage on the Jenkins host (not inside Docker)
+      agent any // ✅ Run this stage on the Jenkins host (not inside Docker)
       environment {
         GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
-        GIT_USER_NAME = "vasanth-86"
       }
       steps {
         checkout scm
-        withCredentials([string(credentialsId: 'github-1', variable: 'GITHUB_TOKEN')]) {
+        withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
           sh '''
-            echo "Current directory: $(pwd)"
+            echo "Running git update outside Docker"
             ls -a
             git config user.email "vasantheeswaransakthivel.com"
             git config user.name "vasanth-86"
