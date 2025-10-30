@@ -84,7 +84,7 @@ pipeline {
           sh '''
             echo "Current directory: $(pwd)"
             ls -a
-            git config user.email "vasantheeswaransakthivel.com"
+            git config user.email "vasantheeswaransakthivel@gmail.com"
             git config user.name "vasanth-86"
             sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
             git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
