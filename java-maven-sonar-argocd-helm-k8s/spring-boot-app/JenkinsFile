@@ -74,37 +74,26 @@ pipeline {
     }
 
     stage('Update Deployment File') {
-      agent { label 'master' } // ✅ run on Jenkins master safely
-      environment {
-        GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
-        GIT_USER_NAME = "vasanth-86"
-      }
-      steps {
-        withCredentials([string(credentialsId: 'github-1', variable: 'GITHUB_TOKEN')]) {
-          sh '''
-            echo "Current directory: $(pwd)"
-            git config --global --add safe.directory $(pwd)
-            git config user.email "vasantheeswaransakthivel.com"
-            git config user.name "${GIT_USER_NAME}"
-
-            echo "🔧 Updating deployment manifest..."
-            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-
-            git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-            git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
-            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
-          '''
-        }
-      }
-    }
+  agent any   // or { label 'built-in' }
+  environment {
+    GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
+    GIT_USER_NAME = "vasanth-86"
   }
+  steps {
+    withCredentials([string(credentialsId: 'github-1', variable: 'GITHUB_TOKEN')]) {
+      sh '''
+        echo "Current directory: $(pwd)"
+        git config --global --add safe.directory $(pwd)
+        git config user.email "vasantheeswaransakthivel.com"
+        git config user.name "${GIT_USER_NAME}"
 
-  post {
-    success {
-      echo "✅ Build succeeded!"
-    }
-    failure {
-      echo "❌ Build failed!"
+        echo "🔧 Updating deployment manifest..."
+        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+
+        git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+        git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
+        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+      '''
     }
   }
 }
