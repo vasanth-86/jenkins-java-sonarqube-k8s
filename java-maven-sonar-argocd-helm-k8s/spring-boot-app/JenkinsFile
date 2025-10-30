@@ -15,7 +15,8 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        echo 'passed'
+        // ✅ This ensures the .git directory is available
+        git branch: 'main', url: 'https://github.com/vasanth-86/jenkins-java-sonarqube-k8s.git'
       }
     }
 
