@@ -84,7 +84,7 @@ pipeline {
       }
       steps {
         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-          dir("${env.WORKSPACE}") {
+          dir("java-maven-sonar-argocd-helm-k8s") {
             sh '''
               echo "Running git update outside Docker"
               ls -a
