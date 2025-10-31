@@ -89,9 +89,15 @@ pipeline {
           echo "Marking Jenkins workspace as safe for Git..."
           git config --global --add safe.directory ${PWD}
 
+          echo "Fetching latest changes..."
+          git fetch origin main
+
           echo "Switching to main branch..."
           git checkout main || git checkout -b main
-          
+
+          echo "Rebasing latest commits..."
+          git rebase origin/main || git rebase --skip
+
           echo "Updating deployment.yml with new image tag..."
           sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
 
@@ -99,6 +105,8 @@ pipeline {
           git config user.email "vasantheeswaransakthivel@gmail.com"
           git config user.name "${GIT_USER}"
           git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
+
+          echo "Pushing changes..."
           git push https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/${GIT_REPO_NAME}.git HEAD:main
         '''
       }
