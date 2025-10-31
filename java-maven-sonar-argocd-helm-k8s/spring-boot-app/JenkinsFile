@@ -74,12 +74,20 @@ pipeline {
     }
 
     stage('Update Deployment File') {
-      agent any // ✅ Run this stage on the Jenkins host (not inside Docker)
+      agent any
       environment {
         GIT_REPO_NAME = "jenkins-java-sonarqube-k8s"
       }
       steps {
-        checkout scm
+        // Fresh checkout on Jenkins host (not Docker)
+        checkout([$class: 'GitSCM',
+          branches: [[name: '*/main']],
+          userRemoteConfigs: [[
+            url: 'https://github.com/vasanth-86/jenkins-java-sonarqube-k8s.git',
+            credentialsId: 'github'
+          ]]
+        ])
+
         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
           sh '''
             echo "Running git update outside Docker"
@@ -89,7 +97,7 @@ pipeline {
             sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
             git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
             git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
-            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+            git push https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/${GIT_REPO_NAME}.git HEAD:main
           '''
         }
       }
